@@ -3,51 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Happy Birthday 🎉</title>
+<title>Birthday Surprise 🎉</title>
 
 <style>
 
 body{
-font-family: Arial, sans-serif;
-background: linear-gradient(135deg,#ff9a9e,#fad0c4);
+margin:0;
+font-family:Arial, sans-serif;
 height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
+background:linear-gradient(135deg,#ff758c,#ff7eb3);
+overflow:hidden;
 text-align:center;
-margin:0;
+color:white;
 }
 
-.card{
-background:white;
-padding:40px;
-border-radius:20px;
-box-shadow:0 10px 30px rgba(0,0,0,0.2);
-max-width:400px;
+.container{
+max-width:500px;
 }
 
 h1{
-color:#ff4081;
+font-size:40px;
+margin-bottom:20px;
+}
+
+#typing{
+font-size:18px;
+min-height:40px;
 }
 
 button{
 margin-top:20px;
 padding:12px 25px;
+font-size:16px;
 border:none;
 border-radius:10px;
-background:#ff4081;
-color:white;
-font-size:16px;
+background:white;
+color:#ff4081;
 cursor:pointer;
 transition:0.3s;
 }
 
 button:hover{
-background:#e91e63;
+transform:scale(1.1);
 }
 
-.hidden{
-display:none;
+canvas{
+position:fixed;
+top:0;
+left:0;
+pointer-events:none;
 }
 
 </style>
@@ -55,24 +62,76 @@ display:none;
 
 <body>
 
-<div class="card">
+<div class="container">
 
 <h1>🎂 Happy Birthday!</h1>
 
-<p id="message">Hari ini spesial banget 🎉</p>
+<p id="typing"></p>
 
-<button onclick="showSurprise()">Klik buat kejutan 🎁</button>
-
-<p id="surprise" class="hidden">
-Semoga semua impian kamu tercapai, selalu sehat, dan makin sukses! 💖
-</p>
+<button onclick="startSurprise()">Klik untuk kejutan 🎁</button>
 
 </div>
 
+<audio id="music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
+<canvas id="confetti"></canvas>
+
 <script>
 
-function showSurprise(){
-document.getElementById("surprise").classList.remove("hidden");
+let text="Hari ini hari spesial buat kamu. Semoga semua yang kamu impikan tercapai dan kamu selalu bahagia! 🎉";
+let i=0;
+
+function typeEffect(){
+if(i<text.length){
+document.getElementById("typing").innerHTML+=text.charAt(i);
+i++;
+setTimeout(typeEffect,40);
+}
+}
+
+typeEffect();
+
+function startSurprise(){
+document.getElementById("music").play();
+startConfetti();
+}
+
+const canvas=document.getElementById("confetti");
+const ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let pieces=[];
+
+for(let i=0;i<150;i++){
+pieces.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+size:Math.random()*10+5,
+speed:Math.random()*3+2
+});
+}
+
+function startConfetti(){
+function update(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+pieces.forEach(p=>{
+ctx.fillStyle="hsl("+Math.random()*360+",100%,50%)";
+ctx.fillRect(p.x,p.y,p.size,p.size);
+p.y+=p.speed;
+
+if(p.y>canvas.height){
+p.y=0;
+p.x=Math.random()*canvas.width;
+}
+});
+
+requestAnimationFrame(update);
+}
+
+update();
 }
 
 </script>
